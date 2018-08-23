@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="600" status="info">
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %t %c{1}.%M(%F:%L) - %m%n"/>
+        </Console>
+
+        <RollingFile name="fixedTimeFileAppender"
+                     fileName="${sys:mumble.log.home}/mpc-giftcard.log"
+                     filePattern="${sys:mumble.log.home}/mpc-giftcard.log.%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %t %c{1}.%M(%F:%L) - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="500 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="24"/>
+        </RollingFile>
+
+        <RollingFile name="appMonitorFixedTimeFileAppender"
+                     fileName="${sys:mumble.log.home}/mpc-giftcard-appmonitor.log"
+                     filePattern="${sys:mumble.log.home}/mpc-giftcard-appmonitor.log.%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %c{1}(%F:%L) - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="200 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="24"/>
+        </RollingFile>
+
+        <RollingFile name="wemqFixedTimeFileAppender"
+                     fileName="${sys:mumble.log.home}/mpc-giftcard-wemq.log"
+                     filePattern="${sys:mumble.log.home}/mpc-giftcard-wemq.log.%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %c{1}(%F:%L) - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="500 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="24"/>
+        </RollingFile>
+       
+    </Appenders>
+
+    <Loggers>
+        <AsyncLogger name="cn.webank" level="debug" additivity="false" includeLocation="true">
+            <AppenderRef ref="fixedTimeFileAppender"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="RocketmqClient" level="info" additivity="false" includeLocation="true">
+            <AppenderRef ref="wemqFixedTimeFileAppender"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="appMonitor" level="info" additivity="false" includeLocation="true">
+            <AppenderRef ref="appMonitorFixedTimeFileAppender"/>
+        </AsyncLogger>
+
+        <Root level="info" includeLocation="true">
+            <AppenderRef ref="fixedTimeFileAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>
