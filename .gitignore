@@ -1,0 +1,29 @@
+# Compiled source #
+*.class
+
+# Java Package Files #
+*.jar
+*.war
+*.ear
+
+# Logs #
+*.log
+
+######################
+# Maven
+######################
+target/
+
+######################
+# Eclipse
+######################
+
+#ignore the eclipse configuration files 
+.project
+.db
+.metadata
+.classpath
+.settings/
+
+# Directories #
+bin/
