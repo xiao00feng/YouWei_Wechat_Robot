@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:task="http://www.springframework.org/schema/task"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx.xsd
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop.xsd
+           http://www.springframework.org/schema/task
+		   http://www.springframework.org/schema/task/spring-task.xsd">
+      
+    <!-- task任务扫描注解 -->
+	<task:annotation-driven/>
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+     <property name="location" value="classpath:robot.properties" />
+     </bean>
+    
+     <import resource="classpath:spring-datasource.xml" />
+
+     <import resource="classpath:freemarker-config.xml" />  
+
+	 <context:component-scan base-package="cn.YouWei.STD.robot.service"></context:component-scan>
+     <context:component-scan base-package="cn.YouWei.STD.robot.dao"></context:component-scan>
+      
+      <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+      	<constructor-arg index="0" ref="sqlSessionFactory"/>
+      </bean>
+
+      <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation">
+            <value>classpath:mybatis-config.xml</value>
+        </property>
+         <property name="dataSource">
+            <ref bean="dataSource"/>
+        </property>
+     </bean>
+
+
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="*" isolation="READ_COMMITTED" />
+        </tx:attributes>
+    </tx:advice>
+
+    <aop:config>
+        <aop:pointcut id="zfServiceOperation" expression="execution(* cn.YouWei.STD.robot.service..*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="zfServiceOperation"/>
+    </aop:config>
+</beans>
